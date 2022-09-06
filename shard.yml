@@ -1,0 +1,18 @@
+name: jasper
+version: 0.1.0
+
+authors:
+  - croksavon <dubois.tanguy@gmail.com>
+
+dependencies:
+  crsfml:
+    github: oprypin/crsfml
+    version: ~> 2.5.2
+
+targets:
+  jasper:
+    main: src/jasper.cr
+
+crystal: 1.5.0
+
+license: MIT
