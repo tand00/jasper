@@ -17,10 +17,11 @@ module Jasper
             @height = 100.0
             @vertices = SF::VertexArray.new(SF::Quads, 4)
             @vertices.append SF::Vertex.new({0, 0}, tex_coords: {0, 0})
-            @vertices.append SF::Vertex.new({100, 0}, tex_coords: {64, 0})
-            @vertices.append SF::Vertex.new({100, 100}, tex_coords: {64, 36})
-            @vertices.append SF::Vertex.new({0, 100}, tex_coords: {0, 36})
-            @texture = SF::Texture.from_file("src/assets/test_sprite.png")
+            @vertices.append SF::Vertex.new({128, 0}, tex_coords: {128, 0})
+            @vertices.append SF::Vertex.new({128, 128}, tex_coords: {128, 128})
+            @vertices.append SF::Vertex.new({0, 128}, tex_coords: {0, 128})
+            @texture = SF::Texture.from_file("src/assets/Voyager-001.png")
+            self.set_origin(64,64)
             @alive = true
             self.position = pos
         end

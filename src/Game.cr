@@ -45,18 +45,18 @@ module Jasper
 					e_block.call(event)
 				end
 			end
-			@engine.update(dt)
 			if u_block = @update_block
 				u_block.call(dt)
 			end
+			@engine.update(dt)
 		end
 
 		private def do_render
 			@window.clear(SF::Color::Black)
-			@engine.render(@window)
 			if r_block = @render_block
 				r_block.call(@window)
 			end
+			@engine.render(@window)
 			@window.display
 		end
 
