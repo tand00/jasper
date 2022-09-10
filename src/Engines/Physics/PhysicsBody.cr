@@ -23,7 +23,7 @@ module Jasper
         @norm = 0.0f32
         @force_direction = SF.vector2f(0.0,0.0)
         @momentum = 0.0f32
-        @inertia_momentum = 100.0f32
+        @inertia_momentum = 50.0f32
         @rotation_speed = 0.0f32
         @direction = SF.vector2f(0.0,-1.0)
 
@@ -47,11 +47,14 @@ module Jasper
             @norm = Math.sqrt((movement.x ** 2) + (movement.y ** 2))
             if(@norm > NULL_EPSILON)
                 @force_direction = movement / @norm
+            else 
+                @force_direction = SF.vector2f(0.0,0.0)
             end
             @acceleration = SF.vector2f(0.0,0.0)
         end
 
         def compute_rotation(dt : SF::Time)
+            @momentum += (-@rotation_speed) * (@friction_coefficient/@inertia_momentum)
             @rotation_speed += @momentum * dt.as_seconds * @scaler
             new_rotation = @rotation_speed * dt.as_seconds * @scaler
             self.rotate(new_rotation)

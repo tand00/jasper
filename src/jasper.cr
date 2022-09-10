@@ -17,8 +17,8 @@ game = Jasper::Game.new(Jasper::TITLE, Jasper::RESOLUTION, Jasper::STYLE)
 e = Jasper::Entity.new(SF.vector2f(500,500))
 game.register(e)
 
-force = 1.0f32
-torque = 1.0f32
+force = 0.2f32
+torque = 0.3f32
 
 game.on_event do |event|
 

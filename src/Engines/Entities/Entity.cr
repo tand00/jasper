@@ -13,15 +13,15 @@ module Jasper
 
         def initialize(pos = SF.vector2f(0.0,0.0))
             super()
-            @width = 100.0
-            @height = 100.0
+            @width = 128
+            @height = 128
             @vertices = SF::VertexArray.new(SF::Quads, 4)
             @vertices.append SF::Vertex.new({0, 0}, tex_coords: {0, 0})
-            @vertices.append SF::Vertex.new({128, 0}, tex_coords: {128, 0})
-            @vertices.append SF::Vertex.new({128, 128}, tex_coords: {128, 128})
-            @vertices.append SF::Vertex.new({0, 128}, tex_coords: {0, 128})
+            @vertices.append SF::Vertex.new({@width, 0}, tex_coords: {128, 0})
+            @vertices.append SF::Vertex.new({@width, @height}, tex_coords: {128, 128})
+            @vertices.append SF::Vertex.new({0, @height}, tex_coords: {0, 128})
             @texture = SF::Texture.from_file("src/assets/Voyager-001.png")
-            self.set_origin(64,64)
+            self.set_origin(@width / 2, @height / 2)
             @alive = true
             self.position = pos
         end

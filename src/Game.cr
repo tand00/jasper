@@ -11,6 +11,7 @@ module Jasper
 			@videomode = SF::VideoMode.new(*res)
 			@window = SF::RenderWindow.new(@videomode, title, style)
 			@engine = Engines::GameEngine.new
+			@camera = SF::View.new(SF.float_rect(0,0,res[0],res[1]))
 		end
 
 		def update(&block : SF::Time ->)
