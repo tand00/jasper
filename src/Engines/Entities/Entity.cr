@@ -21,6 +21,7 @@ module Jasper
             @vertices.append SF::Vertex.new({@width, @height}, tex_coords: {128, 128})
             @vertices.append SF::Vertex.new({0, @height}, tex_coords: {0, 128})
             @texture = SF::Texture.from_file("src/assets/Voyager-001.png")
+            @texture.smooth = true
             self.set_origin(@width / 2, @height / 2)
             @alive = true
             self.position = pos

@@ -1,6 +1,7 @@
 require "crsfml"
 
 require "./Game"
+require "./Scene"
 require "./Engines/Entities/Entity"
 
 module Jasper
@@ -13,16 +14,14 @@ module Jasper
 end
 
 game = Jasper::Game.new(Jasper::TITLE, Jasper::RESOLUTION, Jasper::STYLE)
-
+scene = Jasper::Scene.new("src/assets/background-tile.png")
 e = Jasper::Entity.new(SF.vector2f(500,500))
 game.register(e)
+game.register_scene("space", scene)
+game.set_scene("space")
 
 force = 0.2f32
 torque = 0.3f32
-
-game.on_event do |event|
-
-end
 
 game.update do |dt| 
 
@@ -38,10 +37,6 @@ game.update do |dt|
 	if(SF::Keyboard.key_pressed?(SF::Keyboard::D))
 		e.apply_torque(torque)
 	end
-
-end
-
-game.render do |window|
 
 end
 
