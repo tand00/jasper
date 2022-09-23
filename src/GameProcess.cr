@@ -34,6 +34,15 @@ module Jasper
 			@event_block = block
 		end
 
+        def react_to_event(event : SF::Event) ; end
+
+        def do_event(event : SF::Event)
+            react_to_event(event)
+            if e_block = @event_block
+                e_block.call(event)
+            end
+        end
+
     end
 
 end
