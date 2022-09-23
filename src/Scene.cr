@@ -1,8 +1,9 @@
 require "crsfml"
+require "./GameProcess"
 
 module Jasper
 
-    class Scene
+    class Scene < GameProcess
 
         def initialize(background_file : String) 
             # TODO : optimize background rendering !!
@@ -14,22 +15,9 @@ module Jasper
             @background.origin = SF.vector2(width / 2, width / 2)
         end
 
-        def do_update(dt : SF::Time)
-            update(dt)
-        end
-
-        # def on_update(&u_block)
-
-        def update(dt : SF::Time)
-            
-        end
-
         def do_render(window : SF::RenderWindow)
-            render(window)
-        end
-
-        def render(window : SF::RenderWindow)
             window.draw(@background)
+            super
         end
 
         def leave ; end

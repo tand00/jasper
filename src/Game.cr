@@ -1,10 +1,11 @@
 require "crsfml"
+require "./GameProcess"
 require "./Engines/GameEngine"
 require "./Scene"
 
 module Jasper
 
-	class Game
+	class Game < GameProcess
 
 		getter window
 
@@ -15,29 +16,21 @@ module Jasper
 			@window = SF::RenderWindow.new(@videomode, title, style)
 			@engine = Engines::GameEngine.new
 			@camera = SF::View.new(SF.float_rect(0,0,res[0],res[1]))
-			@scenes = {} of String => Scene
+			@scenes = {} of Symbol => Scene
 		end
 
-		def update(&block : SF::Time ->)
-			@update_block = block
-		end
-
-		def render(&block : SF::RenderWindow ->)
-			@render_block = block
-		end
-
-		def register_scene(name : String, scene : Scene)
+		def register_scene(name : Symbol, scene : Scene)
 			@scenes[name] = scene
 		end
 
-		def set_scene(name : String)
+		def set_scene(name : Symbol)
+			if previous = @current_scene
+				previous.leave
+			end
 			if scene = @scenes[name]
 				@current_scene = scene
+				scene.enter
 			end
-		end
-
-		def on_event(&block : SF::Event ->)
-			@event_block = block
 		end
 
 		def register(x : Jasper::Engines::Registrable)
@@ -53,7 +46,7 @@ module Jasper
 			end
 		end
 
-		private def do_update(dt : SF::Time)
+		def do_update(dt : SF::Time)
 			while event = @window.poll_event
 				if event.is_a?(SF::Event::Closed) ; @window.close ; end
 				if e_block = @event_block
@@ -69,7 +62,7 @@ module Jasper
 			@engine.update(dt)
 		end
 
-		private def do_render
+		def do_render
 			@window.clear(SF::Color::Black)
 			if scene = @current_scene
 				scene.do_render(@window)
