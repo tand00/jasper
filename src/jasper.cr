@@ -14,7 +14,7 @@ module Jasper
 end
 
 game = Jasper::Game.new(Jasper::TITLE, Jasper::RESOLUTION, Jasper::STYLE)
-scene = Jasper::Scene.new(game, "src/assets/background-tile.png")
+scene = Jasper::Scene.new("src/assets/background-tile.png")
 e = Jasper::Entity.new(SF.vector2f(500,500))
 force = 0.2f32
 torque = 0.3f32
