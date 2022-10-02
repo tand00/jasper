@@ -63,6 +63,10 @@ module Jasper
             @momentum = 0
         end
 
+        def collide(other : PhysicsBody)
+            
+        end
+
         def update_physics(dt : SF::Time)
             compute_translation(dt)
             compute_rotation(dt)
