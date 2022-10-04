@@ -14,6 +14,9 @@ module Jasper
         property scaler
         property friction_coefficient
         property inertia_momentum
+        property hitbox
+        property collidable
+        property static_body
 
         @scaler = 80.0f32
         @inertia = SF.vector2f(0.0,0.0)
@@ -26,6 +29,9 @@ module Jasper
         @inertia_momentum = 50.0f32
         @rotation_speed = 0.0f32
         @direction = SF.vector2f(0.0,-1.0)
+        @hitbox = SF::ConvexShape.new
+        @collidable = true
+        @static_body = false
 
         def initialize
             super
@@ -64,6 +70,10 @@ module Jasper
         end
 
         def collide(other : PhysicsBody)
+            return unless @collidable
+            collision_vec = other.position - self.position
+            vec_norm = Math.sqrt( (collision_vec.x ** 2) + (collision_vec.y ** 2) )
+            collision_dir = collision_vec / vec_norm
             
         end
 
