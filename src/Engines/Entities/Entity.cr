@@ -42,6 +42,8 @@ module Jasper
             states.transform *= transform
             states.texture = @texture
             target.draw(@vertices, states)
+            return unless hitbox = @hitbox
+            target.draw(hitbox)
         end
 
         def middle
