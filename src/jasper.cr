@@ -9,7 +9,7 @@ require "./Interfaces/Camera"
 module Jasper
 
 	VERSION = "0.1.0"
-	RESOLUTION = {1920, 1080}
+	RESOLUTION = {600, 500}
 	STYLE = SF::Style::Default
 	TITLE = "Beyond Reach"
 
@@ -28,7 +28,11 @@ c = Jasper::Controls.new({
 	:down => SF::Keyboard::S,
 	:left => SF::Keyboard::Q,
 	:right => SF::Keyboard::D,
-	:break => SF::Keyboard::Space
+	:break => SF::Keyboard::Space,
+	:debug_up => SF::Keyboard::Up,
+	:debug_down => SF::Keyboard::Down,
+	:debug_left => SF::Keyboard::Left,
+	:debug_right => SF::Keyboard::Right
 })
 
 scene.register(e)
@@ -51,8 +55,21 @@ scene.on_update do |dt|
 		e.apply_torque(torque)
 	end
 
+	if(c.action?(:debug_up))
+		e.move(0,-2)
+	end
+	if(c.action?(:debug_down))
+		e.move(0,2)
+	end
+	if(c.action?(:debug_left))
+		e.move(-2,0)
+	end
+	if(c.action?(:debug_right))
+		e.move(2,0)
+	end
+
 	if(c.action?(:break))
-		e.friction_coefficient = 1
+		e.friction_coefficient = 0.5
 	else
 		e.friction_coefficient = 0
 	end

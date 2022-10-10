@@ -88,20 +88,24 @@ module Jasper
             collision_dir = hitbox.get_collision_direction(o_hitbox)
             return unless collision_dir
             incoming_speed = collision_dir.x * @inertia.x + collision_dir.y * @inertia.y
-            other_speed = - (collision_dir.x * other.inertia.x + collision_dir.y * other.inertia.y)
+            other_speed = -(collision_dir.x * other.inertia.x + collision_dir.y * other.inertia.y)
             if other.static_body
                 apply_speed(collision_dir * (-incoming_speed) * 2)
                 return
             end
+            total_speed = incoming_speed + other_speed
             mass_ratio = self.mass / other.mass
-            a = (1 + mass_ratio)
-            b = 2 * (other_speed - incoming_speed * mass_ratio)
-            c = (mass_ratio - 1) * (incoming_speed ** 2) - 2 * incoming_speed * other_speed
-            sqrt_delta = Math.sqrt( (b ** 2) - 4 * a * c )
-            x = (-b + sqrt_delta) / (2 * a)
-            x = (-b - sqrt_delta) / (2 * a) if x < 0
-            apply_speed(collision_dir * (-x) * 2)
+            #puts total_speed
+            apply_speed(collision_dir * (-total_speed) / mass_ratio)
             return
+            # a = (1 + mass_ratio)
+            # b = 2 * (other_speed - incoming_speed * mass_ratio)
+            # c = (mass_ratio - 1) * (incoming_speed ** 2) - 2 * incoming_speed * other_speed
+            # sqrt_delta = Math.sqrt( (b ** 2) - 4 * a * c )
+            # x = (-b + sqrt_delta) / (2 * a)
+            # x = (-b - sqrt_delta) / (2 * a) if x < 0
+            # apply_speed(collision_dir * (-x) * 2)
+            # return
         end
 
         def update_physics(dt : SF::Time)

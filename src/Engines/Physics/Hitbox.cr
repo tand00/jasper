@@ -32,7 +32,6 @@ module Jasper
         def check_for_collision_segment(other : Hitbox) #: (Tuple(SF::Vector2f,SF::Vector2f) | Nil)
             self.each_segment do |p1,p2|
 
-                # p1.x += 1 if p1.x == p2.x # Disalignment, until a better solution
                 abs_1 = [p1.x, p2.x]
                 x_range_1 = (abs_1.min()..abs_1.max())
 
@@ -62,11 +61,10 @@ module Jasper
                         a = (p2.y - p1.y) / (p2.x - p1.x)
                         b = p1.y - a * p1.x
                         y = a * p3.x + b
-                        next unless (y - p3.x) * (y - p4.x) <= 0
+                        next unless (y - p3.y) * (y - p4.y) <= 0
                         return {p1, p2}
                     end
 
-                    #p3.x += 1 if p3.x == p4.x # CF. pre
                     a = (p2.y - p1.y) / (p2.x - p1.x)
                     b = p1.y - a * p1.x
                     c = (p4.y - p3.y) / (p4.x - p3.x)
@@ -74,30 +72,26 @@ module Jasper
 
                     if a == c
                         next unless b == d
-                        return {p1, p2} if (p3.y - p1.y) * (p4.y - p1.y) <= 0
-                        return {p1, p2} if (p3.y - p2.y) * (p4.y - p2.y) <= 0
-                        return {p1, p2} if (p3.y - p1.y) * (p4.y - p2.y) <= 0
+                        return {p1, p2} if (p3.x - p1.x) * (p4.x - p1.x) <= 0
+                        return {p1, p2} if (p3.x - p2.x) * (p4.x - p2.x) <= 0
+                        return {p1, p2} if (p3.x - p1.x) * (p4.x - p2.x) <= 0
                         next
                     end
 
-                    # a += 1 if a == c # CF. pre
                     x_inter = (b - d) / (c - a)
                     next unless x_range_1.includes?(x_inter)
                     next unless x_range_2.includes?(x_inter)
                     collision_point = SF.vector2f(x_inter, a * x_inter + b)
-                    #return collision_point
+
                     return {p1, p2}
                 end
             end
-            return nil
+            return
         end
 
         def get_collision_direction(other : Hitbox) : (SF::Vector2f | Nil)
-            #point = check_for_collision_point(other)
-            #return nil unless point
-            #vec = point - @parent.position
             segment = check_for_collision_segment(other)
-            return nil unless segment
+            return unless segment
             p1, p2 = segment
             ortho_vec = p2 - p1
             ref = other.parent.position - @parent.position
