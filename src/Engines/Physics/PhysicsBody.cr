@@ -7,6 +7,7 @@ module Jasper
 
         NULL_EPSILON = 1e-3
         STATIC_DT = 0.01f32
+        COLLISION_MARGIN = 1.1f32
 
         property direction
         property force_direction
@@ -104,28 +105,30 @@ module Jasper
                 apply_rotation_speed(-@rotation_speed * 2)
                 return
             end
-            puts "-------"
-            puts incoming_speed
-            puts other_speed
             total_speed = incoming_speed + other_speed
+            total_rotation_speed = @rotation_speed + other.rotation_speed
+            rotation_dir = @rotation_speed >= 0 ? 1 : -1
+            if @rotation_speed == 0
+                rotation_dir = other.rotation_speed >= 0 ? -1 : 1
+            end
             mass_ratio = self.mass / other.mass
-            #puts total_speed
             apply_speed(collision_dir * (-total_speed) / mass_ratio)
+            apply_rotation_speed(rotation_dir * (-total_rotation_speed) / mass_ratio)
             return
-            a = (1 + mass_ratio)
-            b = 2 * (other_speed - incoming_speed * mass_ratio)
-            c = (mass_ratio - 1) * (incoming_speed ** 2) - 2 * incoming_speed * other_speed
-            sqrt_delta = Math.sqrt( (b ** 2) - 4 * a * c )
-            x = (-b + sqrt_delta) / (2 * a)
-            x = (-b - sqrt_delta) / (2 * a) if x < 0
-            apply_speed(collision_dir * (-x) * 2)
-            return
+            # a = (1 + mass_ratio)
+            # b = 2 * (other_speed - incoming_speed * mass_ratio)
+            # c = (mass_ratio - 1) * (incoming_speed ** 2) - 2 * incoming_speed * other_speed
+            # sqrt_delta = Math.sqrt( (b ** 2) - 4 * a * c )
+            # x = (-b + sqrt_delta) / (2 * a)
+            # x = (-b - sqrt_delta) / (2 * a) if x < 0
+            # apply_speed(collision_dir * (-x) * 2)
+            # return
         end
 
         def update_physics(dt : SF::Time)
             if @collided
-                self.move(-@last_movement * 1.2f32)
-                self.rotate(-1.2f32 * @last_rotation)
+                self.move(-@last_movement * COLLISION_MARGIN)
+                self.rotate(-@last_rotation * COLLISION_MARGIN)
                 @collided = false
             end
             compute_translation(dt)

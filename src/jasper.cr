@@ -9,7 +9,7 @@ require "./Interfaces/Camera"
 module Jasper
 
 	VERSION = "0.1.0"
-	RESOLUTION = {600, 500}
+	RESOLUTION = {1200, 700}
 	STYLE = SF::Style::Default
 	TITLE = "Beyond Reach"
 
@@ -20,8 +20,8 @@ scene = Jasper::Scene.new("src/assets/background-tile.png")
 e = Jasper::Entity.new(SF.vector2(500,500))
 e2 = Jasper::Entity.new(SF.vector2(600,600))
 cam = Jasper::Camera.new(Jasper::RESOLUTION)
-force = 0.2f32
-torque = 0.3f32
+force = 0.1f32
+torque = 0.1f32
 
 c = Jasper::Controls.new({
 	:up => SF::Keyboard::Z,
