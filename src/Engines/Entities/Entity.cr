@@ -7,12 +7,14 @@ module Jasper
 
         include SF::Drawable
 
-        property alive
+        property health : Int32
         getter width : Float32
         getter height : Float32
+        property vertices : SF::VertexArray
 
         def initialize(pos = SF.vector2f(0.0,0.0))
             super()
+            @health = 100
             @width = 128
             @height = 128
             @vertices = SF::VertexArray.new(SF::Quads, 4)
@@ -25,6 +27,7 @@ module Jasper
             self.set_origin(@width / 2, @height / 2)
             @alive = true
             self.position = pos
+            @body.position = sf_to_cp(self.position)
         end
 
         def update(dt : SF::Time)
@@ -32,8 +35,12 @@ module Jasper
         end
 
         def kill
-            @alive = false
+            @health = 0
             self.on_death
+        end
+
+        def alive
+            return @health > 0
         end
 
         def on_death ; end
@@ -42,8 +49,6 @@ module Jasper
             states.transform *= transform
             states.texture = @texture
             target.draw(@vertices, states)
-            return unless hitbox = @hitbox
-            target.draw(hitbox)
         end
 
         def middle

@@ -20,8 +20,8 @@ scene = Jasper::Scene.new("src/assets/background-tile.png")
 e = Jasper::Entity.new(SF.vector2(500,500))
 e2 = Jasper::Entity.new(SF.vector2(600,600))
 cam = Jasper::Camera.new(Jasper::RESOLUTION)
-force = 0.1f32
-torque = 0.1f32
+force = 500f32
+torque = 50f32
 
 c = Jasper::Controls.new({
 	:up => SF::Keyboard::Z,
@@ -53,25 +53,6 @@ scene.on_update do |dt|
 	end
 	if(c.action?(:right))
 		e.apply_torque(torque)
-	end
-
-	if(c.action?(:debug_up))
-		e.move(0,-2)
-	end
-	if(c.action?(:debug_down))
-		e.move(0,2)
-	end
-	if(c.action?(:debug_left))
-		e.move(-2,0)
-	end
-	if(c.action?(:debug_right))
-		e.move(2,0)
-	end
-
-	if(c.action?(:break))
-		e.friction_coefficient = 0.5
-	else
-		e.friction_coefficient = 0
 	end
 
 end

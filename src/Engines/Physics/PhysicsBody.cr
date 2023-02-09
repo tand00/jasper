@@ -3,136 +3,65 @@ require "./Hitbox"
 
 module Jasper
 
-    class PhysicsBody < SF::Transformable
+    module Conversions
+    extend self
 
-        NULL_EPSILON = 1e-3
+        def sf_to_cp(vec : SF::Vector2f)
+            return CP::Vect.new(vec.x, vec.y)
+        end
+
+        def cp_to_sf(vec : CP::Vect)
+            return SF.vector2f(vec.x, vec.y)
+        end
+    end
+
+    class PhysicsBody < SF::Transformable
+    include Conversions
+
         STATIC_DT = 0.01f32
-        COLLISION_MARGIN = 1.1f32
 
         property direction
-        property force_direction
-        property inertia
-        property rotation_speed
         property mass
         property scaler
-        property friction_coefficient
         property inertia_momentum
         property hitbox
         property collidable
         property static_body
+        property body
 
         @scaler = 80.0f32
-        @inertia = SF.vector2f(0.0,0.0)
-        @acceleration = SF.vector2f(0.0,0.0)
-        @friction_coefficient = 0.0f32
         @mass = 10.0f32
-        @norm = 0.0f32
-        @force_direction = SF.vector2f(0.0,0.0)
-        @momentum = 0.0f32
         @inertia_momentum = 50.0f32
-        @rotation_speed = 0.0f32
         @direction = SF.vector2f(0.0,-1.0)
         @collidable = true
         @static_body = false
-        @last_movement = SF.vector2f(0.0,0.0)
         @collided = false
-        @last_rotation = 0.0f32
 
         def initialize
-            @hitbox = Hitbox.new(self, [
-                SF.vector2f(32,32),
-                SF.vector2f(96,32),
-                SF.vector2f(96,96),
-                SF.vector2f(32,96)
-            ])
             super
+            @body = CP::Body.new(@mass, @inertia_momentum)
+            @hitbox = CP::Shape::Poly.new(@body, [
+                CP::Vect.new(-32,-32),
+                CP::Vect.new(32,-32),
+                CP::Vect.new(32,32),
+                CP::Vect.new(-32,32)
+            ])
+            @hitbox.filter = CP::ShapeFilter::ALL
+            @body.position = sf_to_cp(self.position)
         end
 
         def apply_force(force : SF::Vector2f)
-            @acceleration += force / @mass
-        end
-
-        def apply_speed(speed : SF::Vector2f)
-            @acceleration += speed / (STATIC_DT * @scaler)
+            @body.force = sf_to_cp(force)
         end
 
         def apply_torque(torque : Float32)
-            @momentum += torque / @inertia_momentum
-        end
-
-        def apply_rotation_speed(speed : Float32)
-            @momentum += speed / (STATIC_DT * @scaler)
-        end
-
-        def compute_translation(dt : SF::Time)
-            @acceleration += (-@inertia) * (@friction_coefficient/@mass)
-            @inertia += @acceleration * STATIC_DT * @scaler
-            movement = @inertia * dt.as_seconds * @scaler
-            self.move(movement)
-            @last_movement = movement
-            @norm = Math.sqrt((movement.x ** 2) + (movement.y ** 2))
-            if(@norm > NULL_EPSILON)
-                @force_direction = movement / @norm
-            else 
-                @force_direction = SF.vector2f(0.0,0.0)
-            end
-            @acceleration = SF.vector2f(0.0,0.0)
-        end
-
-        def compute_rotation(dt : SF::Time)
-            @momentum += (-@rotation_speed) * (@friction_coefficient/@inertia_momentum)
-            @rotation_speed += @momentum * STATIC_DT * @scaler
-            new_rotation = @rotation_speed * dt.as_seconds * @scaler
-            self.rotate(new_rotation)
-            @last_rotation = new_rotation
-            rad_rotation = self.rotation * (Math::PI / 180)
-            @direction = SF.vector2f(Math.sin(rad_rotation), -Math.cos(rad_rotation))
-            @momentum = 0
-        end
-
-        def collide(other : PhysicsBody)
-            return unless (hitbox = @hitbox) && (o_hitbox = other.hitbox)
-            return unless @collidable
-            return unless other.collidable
-            return if @static_body
-            collision_dir = hitbox.get_collision_direction(o_hitbox)
-            return unless collision_dir
-            @collided = true
-            incoming_speed = collision_dir.x * @inertia.x + collision_dir.y * @inertia.y
-            other_speed = -(collision_dir.x * other.inertia.x + collision_dir.y * other.inertia.y)
-            if other.static_body
-                apply_speed(collision_dir * (-incoming_speed) * 2)
-                apply_rotation_speed(-@rotation_speed * 2)
-                return
-            end
-            total_speed = incoming_speed + other_speed
-            total_rotation_speed = @rotation_speed + other.rotation_speed
-            rotation_dir = @rotation_speed >= 0 ? 1 : -1
-            if @rotation_speed == 0
-                rotation_dir = other.rotation_speed >= 0 ? -1 : 1
-            end
-            mass_ratio = self.mass / other.mass
-            apply_speed(collision_dir * (-total_speed) / mass_ratio)
-            apply_rotation_speed(rotation_dir * (-total_rotation_speed) / mass_ratio)
-            return
-            # a = (1 + mass_ratio)
-            # b = 2 * (other_speed - incoming_speed * mass_ratio)
-            # c = (mass_ratio - 1) * (incoming_speed ** 2) - 2 * incoming_speed * other_speed
-            # sqrt_delta = Math.sqrt( (b ** 2) - 4 * a * c )
-            # x = (-b + sqrt_delta) / (2 * a)
-            # x = (-b - sqrt_delta) / (2 * a) if x < 0
-            # apply_speed(collision_dir * (-x) * 2)
-            # return
+            @body.torque = torque
         end
 
         def update_physics(dt : SF::Time)
-            if @collided
-                self.move(-@last_movement * COLLISION_MARGIN)
-                self.rotate(-@last_rotation * COLLISION_MARGIN)
-                @collided = false
-            end
-            compute_translation(dt)
-            compute_rotation(dt)
+            self.position = cp_to_sf(@body.position)
+            self.rotation = @body.rotation.to_angle * (180 / Math::PI)
+            self.direction = cp_to_sf(@body.rotation.rotate(CP::Vect.new(0,-1)))
         end
          
     end

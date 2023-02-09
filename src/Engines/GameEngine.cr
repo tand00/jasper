@@ -24,7 +24,11 @@ module Jasper::Engines
         end
 
         def render(window : SF::RenderWindow)
+            debug_draw = SFMLDebugDraw.new(window, SF::RenderStates.new(
+                SF::Transform.new.translate(window.size / 2).scale(1, -1).scale(5, 5)
+              ))
             window.draw(@entities)
+            debug_draw.draw(@physics.space)
         end
 
     end
